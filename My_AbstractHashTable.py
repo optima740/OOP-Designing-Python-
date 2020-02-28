@@ -37,6 +37,13 @@ class abstract_HashTable(ABC):
         # помещает значение в слот
         pass
 
+    # предусловие: заданное значение имеется в хэш-таблице
+    # постусловие: значение удалено, слот очищен. Или неудача - заданного значения нет в хэш-таблице
+    @abstractmethod
+    def remove(self):
+        # удаляет значение из слота
+        pass
+
     # СТАТУСЫ:
 
     CONST_HASH_FUN_NIL = 0    # метод еще не вызывался
@@ -51,6 +58,9 @@ class abstract_HashTable(ABC):
     CONST_PUT_NIL = 0   # метод еще не вызывался
     CONST_PUT_OK = 1    # метод отработал корректно
     CONST_PUT_ERR = 2   # нет свободных слотов для размещения
+    CONST_REMOVE_NIL = 0  # метод еще не вызывался
+    CONST_REMOVE_OK = 1   # метод отработал корректно
+    CONST_REMOVE_ERR = 2  # значение которое нужно удалить, отсутствует в хэш-таблице
 
     # ЗАПРОСЫ ДЛЯ СТАТУСОВ:
 
@@ -70,7 +80,12 @@ class abstract_HashTable(ABC):
     def get_put_status(self):
         pass
 
+    @abstractmethod
+    def get_remove_status(self):
+        pass
+
 class HashTable:
+    
     CONST_HASH_FUN_NIL = 0  # метод еще не вызывался
     CONST_HASH_FUN_OK = 1  # метод отработал корректно
     CONST_HASH_FUN_ERR = 2  # невозможно посчитать хэш-функцию для входного значения
@@ -85,6 +100,9 @@ class HashTable:
     CONST_PUT_ERR = 2  # нет свободных слотов для размещения
     CONST_STR_TO_INT_NIL = 0  # метод еще не вызывался
     CONST_STR_TO_INT_OK = 1   # метод отработал корректно
+    CONST_REMOVE_NIL = 0  # метод еще не вызывался
+    CONST_REMOVE_OK = 1  # метод отработал корректно
+    CONST_REMOVE_ERR = 2  # значение которое нужно удалить, отсутствует в хэш-таблице
 
     def __init__(self, sz):
         # создает структуру данных под hash-таблицу размером sz содержащая пустые слоты (None)
@@ -98,6 +116,7 @@ class HashTable:
         self.__find_status = self.CONST_FIND_NIL
         self.__put_status = self.CONST_PUT_NIL
         self.__str_to_int_status = self.CONST_STR_TO_INT_NIL
+        self.__remove_status = self.CONST_REMOVE_NIL
 
     # постусловие: подготовлено значение для работы хэш-функции
     def __str_to_int(self, value):
@@ -137,13 +156,13 @@ class HashTable:
         # записываем значение по хэш-функции возвращается индекс слота или неудача,
         # если из-за коллизий элемент не удаётся разместить
         index_put = self.seek_slot(value)
-        if self.__seek_slot_status == 1 and index_put is not None:
+        if self.__get_seek_slot_status() == 1 and index_put is not None:
             self.slots[index_put] = value
             self.__put_status = self.CONST_PUT_OK
             return index_put
         self.__put_status = self.CONST_PUT_ERR
 
-    #  постусловие: найден индекс слота с указанным значением или слотов с таким значением нет
+    # постусловие: найден индекс слота с указанным значением или слотов с таким значением нет
     def find(self, value):
         # ищет в слотах указанное значение. Если значение такое есть - возвращает индекс слота. Иначе - неудача
         find_index = self.hash_fun(value)
@@ -159,6 +178,17 @@ class HashTable:
             count += 1
         self.__find_status = self.CONST_FIND_ERR
 
+    # предусловие: заданное значение имеется в хэш-таблице
+    # постусловие: значение удалено(слот очищен). Или неудача - заданного значения нет в хэш-таблице
+    def remove(self, value):
+        # удаляет значение из хэш-таблицы. Если значение не найдено в статус прописываем неудачное выполнение.
+        find_index = self.find(value)
+        if find_index is not None and self.__get_find_status() == 1:
+            self.slots[find_index] = None
+            self.__remove_status = self.CONST_REMOVE_OK
+            return
+        self.__remove_status = self.CONST_REMOVE_ERR
+
     def __get_hash_fun_status(self):
         return self.__hash_fun_status
 
@@ -170,4 +200,7 @@ class HashTable:
 
     def __get_put_status(self):
         return self.__put_status
+
+    def __get_remove(self):
+        return self.__remove_status
 
