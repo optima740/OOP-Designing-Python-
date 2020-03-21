@@ -89,7 +89,7 @@ class Car1:
 class Bus(Car):
     # класс автобус. Наследован от класса автомобиль, но некоторые методы переопределены и ведут себя по-другому.
     def __init__(self, brand, color, max_capacity, length, width, weight, max_speed):
-        # в данном классе конструктор переопределен и будет использован оменно конструктор класса Bus.
+        # в данном классе конструктор переопределен и будет использован конструктор класса Bus.
         self.brand = brand
         self.color = color
         self.max_capacity = max_capacity
@@ -122,22 +122,22 @@ class Helicopter:
         # Метод посадки (вертикальная)
         pass
 
-class FlyingObject(Helicopter):
-    # Класс летающий объект.
+class CombatHelicopter(Helicopter):
+    # Класс боевой вертолет.
     def __init__(self):
         # используем конструктор родителя в иерархии наследования.
         super(self, FlyingObject).__init__(self, max_altitude, max_speed, max_weight, max_capacity)
 
-    def acceleration_takeoff(self):
-        # Метод взлета с разгоном.
+    def attack(self):
+        # Метод атаки.
         # Расширяем функционал родительского класса данным методом.
         pass
 
-    def landing_and_braking(self):
-        # Метод посадки с последующим торможением.
+    def stealthy_flight(self):
+        # Метод скрытного полета.
         # Расширяем функционал родительского класса данным методом.
         pass
-    # Теперь наш летающий объект может взлетать и садится различными способами.
+
 
 # В наследовании применяем специализацию класса родителя (наследник задаёт более специализированный случай родителя):
 class TransportVehicle:
@@ -175,7 +175,7 @@ class TransportVehicle:
         # Метод, позволяющий закрыть дверь.
         pass
 
-class Bus(TransportVehicle):
+class Bus1(TransportVehicle):
     # Класс автобус. Наследуем от класса транспортное средство.
 
     def __init__(self, color, max_capacity, length, width, weight, max_speed, number_wheels, number_doors):
