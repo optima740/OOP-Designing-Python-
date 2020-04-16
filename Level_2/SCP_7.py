@@ -1,9 +1,15 @@
 # ЗАДАНИЕ 14.
 """
+Исправление: Создан общий базовый класс OrderStatus. Все потомки классы-статусы наследованы от него. При наследовании
+классов-статусов происходит переопределение конструктора с полем данных о самом статусе. И добавился метод получения
+текущего статуса заказа. Данная иерархия позволяет классам-статусам быть в подмножестве типа данных OrderStatus. И когда
+мы передаем данный класс в виде полиморфного параметра - status_class ( def change_status(self, status_class)),
+проверка if isinstance() может нас обезапасить от ошибки в дальнейшем вызове метода у переданного полиморфного параметра:
+status_class.get_status()
+
 Небольшой пример иерархии классов: продукт, заказ. В качестве статуса заказа использован отдельный класс.
 При необходимости расширить статусы (добавить новые, например: “ожидает оплаты” или “в доставке”) мы можем просто
 наследовать новый класс-статус.
-Правда, не совсем наверно эффективно в данном случае, что для одного поля (status) приходится создавать целый класс.
 """
 class Product(object):
     def __init__(self, title, price):
@@ -15,7 +21,7 @@ class Order(object):
         self.id = id
         self.total_price = 0
         self.count = 0
-        self.status = None
+        self.status = ''
 
     def add_product(self, product):
         result_list = []
@@ -31,19 +37,35 @@ class Order(object):
     def change_status(self, status_class):
         source_object = OrderInWorkStatus()
         if isinstance(source_object, status_class):
-            self.status = status_class.status
+            self.status = status_class.get_status()
 
     def print_order(self):
         print('total price=', self.total_price)
         print('count=', self.count)
 
-class OrderInWorkStatus(object):
+
+class OrderStatus(object):
+    # базовый класс для статуса заказа
     def __init__(self):
+        self.status = 'Status'
+
+    def get_status(self):
+        # метод получения данных о статусе
+        return self.status
+
+class OrderInWorkStatus(OrderStatus):
+    # потомок для класса-статуса заказа
+    def __init__(self):
+        # переопределение родительского конструктора
         self.status = 'in work'
 
-class OrderDoneStatus(OrderInWorkStatus):
+class OrderDoneStatus(OrderStatus):
+    # потомок для класса-статуса заказа
     def __init__(self):
+        # переопределение родительского конструктора
         self.status = 'done'
+
+
 
 # ЗАДАНИЕ 15.
 # Полиморфный вызов метода.
